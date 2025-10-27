@@ -1,7 +1,9 @@
+import { PsychologistEntity } from "src/psychologist/entities/psychologist.entity";
 import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -28,6 +30,9 @@ export class UserEntity {
 
   @Column({ default: false })
   isRestrict: boolean;
+
+  @OneToOne(() => PsychologistEntity, (psychologist) => psychologist.user)
+  psychologist: PsychologistEntity;
 
   @CreateDateColumn()
   createdAt: Date;
