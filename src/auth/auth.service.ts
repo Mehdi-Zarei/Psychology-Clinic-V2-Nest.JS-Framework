@@ -121,12 +121,14 @@ export class AuthService {
       throw new ConflictException("This Phone Number Already Exist !!");
     }
 
+    const hashPassword = await this.hashService.hashData(password);
+
     const isFirstUser = (await this.userRepository.count()) === 0;
     const newUser = this.userRepository.create({
       name,
       phone,
       email,
-      password,
+      password: hashPassword,
       isRestrict: false,
       role: isFirstUser ? "ADMIN" : "USER",
     });
