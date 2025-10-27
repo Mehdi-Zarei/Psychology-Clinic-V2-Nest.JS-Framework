@@ -6,6 +6,8 @@ import { TypeOrmConfig } from "./config/typeorm.config";
 import { JwtModule } from "@nestjs/jwt";
 import { SmsModule } from "./sms/sms.module";
 import { RedisModule } from "./redis/redis.module";
+import { AvailableTimeModule } from "./available-time/available-time.module";
+import { PsychologistModule } from "./psychologist/psychologist.module";
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { RedisModule } from "./redis/redis.module";
     SmsModule,
     RedisModule,
     JwtModule,
+    AvailableTimeModule,
+    PsychologistModule,
   ],
   controllers: [],
   providers: [],
