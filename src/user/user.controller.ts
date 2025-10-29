@@ -1,20 +1,16 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
   Patch,
   Param,
-  Delete,
   Query,
   UseGuards,
   ParseIntPipe,
   Req,
-  Put,
 } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { ChangeUserRoleDto } from "./dto/create-user.dto";
-import { UpdateUserDto } from "./dto/update-user.dto";
 import { PaginationDto } from "src/common/dto/pagination.dto";
 import {
   ApiBearerAuth,
