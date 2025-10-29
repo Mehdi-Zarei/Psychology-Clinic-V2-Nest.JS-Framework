@@ -17,10 +17,13 @@ export class PsychologistEntity {
   id: number;
 
   @Column()
+  name: string;
+
+  @Column()
   avatar: string;
 
   @Column("text", { array: true })
-  education: string;
+  education: string[];
 
   @Column()
   licenseNumber: number;
@@ -36,6 +39,9 @@ export class PsychologistEntity {
 
   @Column({ default: 5 })
   rating: number;
+
+  @Column({ default: false })
+  isActive: boolean;
 
   @OneToOne(() => UserEntity, (user) => user.psychologist, { eager: true })
   @JoinColumn()
