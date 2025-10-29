@@ -1,9 +1,18 @@
-import { Module } from '@nestjs/common';
-import { AvailableTimeService } from './available-time.service';
-import { AvailableTimeController } from './available-time.controller';
+import { Module } from "@nestjs/common";
+import { AvailableTimeService } from "./available-time.service";
+import { AvailableTimeController } from "./available-time.controller";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { AvailableTimeEntity } from "./entities/available-time.entity";
+import { JwtService } from "@nestjs/jwt";
+import { UserModule } from "src/user/user.module";
+import { PsychologistEntity } from "src/psychologist/entities/psychologist.entity";
 
 @Module({
+  imports: [
+    TypeOrmModule.forFeature([AvailableTimeEntity, PsychologistEntity]),
+    UserModule,
+  ],
   controllers: [AvailableTimeController],
-  providers: [AvailableTimeService],
+  providers: [AvailableTimeService, JwtService],
 })
 export class AvailableTimeModule {}

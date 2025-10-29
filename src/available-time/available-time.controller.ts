@@ -1,34 +1,26 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { AvailableTimeService } from './available-time.service';
-import { CreateAvailableTimeDto } from './dto/create-available-time.dto';
-import { UpdateAvailableTimeDto } from './dto/update-available-time.dto';
+import { Controller, Post, Body, Req, UseGuards } from "@nestjs/common";
+import { AvailableTimeService } from "./available-time.service";
+import { CreateAvailableTimeDto } from "./dto/create-available-time.dto";
+import { Request } from "express";
+import { ApiBearerAuth, ApiConsumes } from "@nestjs/swagger";
+import { CustomAuthGuard } from "src/common/guards/auth.guard";
+import { Roles } from "src/common/decorators/roles.decorator";
+import { SwaggerConsumes } from "src/common/enums/SwaggerConsumes.enum";
 
-@Controller('available-time')
+@Controller("available-time")
 export class AvailableTimeController {
   constructor(private readonly availableTimeService: AvailableTimeService) {}
 
-  @Post()
-  create(@Body() createAvailableTimeDto: CreateAvailableTimeDto) {
-    return this.availableTimeService.create(createAvailableTimeDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.availableTimeService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.availableTimeService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAvailableTimeDto: UpdateAvailableTimeDto) {
-    return this.availableTimeService.update(+id, updateAvailableTimeDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.availableTimeService.remove(+id);
+  @ApiBearerAuth("accessToken")
+  @UseGuards(CustomAuthGuard)
+  @Roles("ADMIN", "PSYCHOLOGIST")
+  @ApiConsumes(SwaggerConsumes.FORM)
+  @Post("add")
+  create(
+    @Body() createAvailableTimeDto: CreateAvailableTimeDto,
+    @Req() req: Request,
+  ) {
+    const userId = req.user.id;
+    return this.availableTimeService.create(createAvailableTimeDto, userId);
   }
 }
