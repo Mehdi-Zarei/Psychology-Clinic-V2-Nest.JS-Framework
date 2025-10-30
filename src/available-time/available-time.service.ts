@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
@@ -10,6 +9,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { AvailableTimeEntity } from "./entities/available-time.entity";
 import { Between, Repository } from "typeorm";
 import { PsychologistEntity } from "src/psychologist/entities/psychologist.entity";
+import { UpdateAvailableTimeDto } from "./dto/update-available-time.dto";
 
 @Injectable()
 export class AvailableTimeService {
@@ -21,7 +21,10 @@ export class AvailableTimeService {
     private readonly psychologistRepository: Repository<PsychologistEntity>,
   ) {}
 
-  async create(createAvailableTimeDto: CreateAvailableTimeDto, userId: number) {
+  async addFreeTime(
+    createAvailableTimeDto: CreateAvailableTimeDto,
+    userId: number,
+  ) {
     const { date, startTime, endTime, isBooked } = createAvailableTimeDto;
 
     const isPsychologistExist = await this.psychologistRepository.findOne({
@@ -55,16 +58,109 @@ export class AvailableTimeService {
     if (isRepeatingTime) {
       throw new ConflictException("This time slot already exists !!");
     }
-
     const newAvailableTime = this.availableTimeRepository.create({
       date,
       endTime,
       startTime,
       isBooked,
-      psychologist: isPsychologistExist,
+      psychologist: { id: isPsychologistExist.id },
     });
     await this.availableTimeRepository.save(newAvailableTime);
 
     return { message: "New Time Set Successfully." };
+  }
+
+  async getFreeTime(id: number) {
+    const availableTime = await this.availableTimeRepository.find({
+      where: { psychologist: { id } },
+    });
+
+    if (!availableTime) {
+      throw new NotFoundException("No Free Time Found !!");
+    }
+
+    return { availableTime };
+  }
+
+  async removeTime(id: number, userId: number) {
+    const availableTime = await this.availableTimeRepository.findOne({
+      where: { id },
+      relations: ["psychologist", "psychologist.user"],
+    });
+
+    if (!availableTime) {
+      throw new NotFoundException("Available Time Not Found !!");
+    }
+
+    if (availableTime.psychologist.user.role !== "ADMIN") {
+      if (availableTime.psychologist.user.id !== userId) {
+        throw new ForbiddenException("You are not allowed to delete this time");
+      }
+    }
+
+    await this.availableTimeRepository.remove(availableTime);
+
+    return { message: "Available time removed successfully" };
+  }
+
+  async updateTime(
+    id: number,
+    userId: number,
+    updateAvailableTimeDto: UpdateAvailableTimeDto,
+  ) {
+    const { date, endTime, isBooked, startTime } = updateAvailableTimeDto;
+
+    const availableTime = await this.availableTimeRepository.findOne({
+      where: { id },
+      relations: ["psychologist", "psychologist.user"],
+    });
+
+    if (!availableTime) {
+      throw new NotFoundException("Time Not Found !!");
+    }
+
+    if (availableTime.psychologist.user.role !== "ADMIN") {
+      if (availableTime.psychologist.user.id !== userId) {
+        throw new ForbiddenException("You are not allowed to update this time");
+      }
+    }
+
+    const formattedDate = date ? new Date(date) : availableTime.date;
+    const formattedStartTime = startTime
+      ? new Date(startTime)
+      : availableTime.startTime;
+
+    const startOfDay = new Date(formattedDate);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(formattedDate);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const existingTime = await this.availableTimeRepository.findOne({
+      where: {
+        date: formattedDate,
+        startTime: formattedStartTime,
+      },
+    });
+
+    if (existingTime && existingTime.id !== id) {
+      throw new ConflictException(
+        "An available time with the same date and start time already exists.",
+      );
+    }
+
+    if (date) availableTime.date = formattedDate;
+    if (startTime) availableTime.startTime = new Date(startTime);
+    if (endTime) availableTime.endTime = new Date(endTime);
+    if (typeof isBooked === "boolean") availableTime.isBooked = isBooked;
+
+    await this.availableTimeRepository.save(availableTime);
+
+    console.log(isBooked);
+
+    return {
+      message: "Available time updated successfully.",
+      data: availableTime,
+    };
   }
 }
