@@ -34,6 +34,7 @@ import { PaginationDto } from "src/common/dto/pagination.dto";
 export class PsychologistController {
   constructor(private readonly psychologistService: PsychologistService) {}
 
+  @ApiOperation({ summary: "Psychologists can register on the site." })
   @ApiConsumes(SwaggerConsumes.MULTIPART)
   @ApiBearerAuth("accessToken")
   @UseGuards(CustomAuthGuard)
@@ -62,6 +63,7 @@ export class PsychologistController {
     );
   }
 
+  @ApiOperation({ summary: "Admin can activate or deactivate a psychologist." })
   @ApiBearerAuth("accessToken")
   @UseGuards(CustomAuthGuard)
   @Roles("ADMIN")
@@ -71,6 +73,9 @@ export class PsychologistController {
   }
 
   @ApiOperation({ summary: "Admin Get All Psychologist." })
+  @ApiBearerAuth("accessToken")
+  @UseGuards(CustomAuthGuard)
+  @Roles("ADMIN")
   @ApiQuery({ name: "page", required: false })
   @ApiQuery({ name: "limit", required: false })
   @ApiQuery({ name: "search", required: false })
