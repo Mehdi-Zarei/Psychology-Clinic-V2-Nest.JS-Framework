@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Type } from "class-transformer";
+import { Transform } from "class-transformer";
 import { IsBoolean, IsDateString, IsOptional, Validate } from "class-validator";
 import {
   ValidatorConstraint,
@@ -48,7 +48,7 @@ export class CreateAvailableTimeDto {
     description: "Indicates whether the slot is booked",
   })
   @IsBoolean()
-  @Type(() => Boolean)
+  @Transform(({ value }) => value === "true" || value === true)
   @IsOptional()
   isBooked?: boolean;
 }
