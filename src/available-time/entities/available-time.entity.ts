@@ -1,9 +1,11 @@
+import { BookingEntity } from "src/booking/entities/booking.entity";
 import { PsychologistEntity } from "src/psychologist/entities/psychologist.entity";
 import {
   Column,
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";

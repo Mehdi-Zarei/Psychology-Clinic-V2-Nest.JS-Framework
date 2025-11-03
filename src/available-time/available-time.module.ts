@@ -6,10 +6,15 @@ import { AvailableTimeEntity } from "./entities/available-time.entity";
 import { JwtService } from "@nestjs/jwt";
 import { UserModule } from "src/user/user.module";
 import { PsychologistEntity } from "src/psychologist/entities/psychologist.entity";
+import { BookingEntity } from "src/booking/entities/booking.entity";
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([AvailableTimeEntity, PsychologistEntity]),
+    TypeOrmModule.forFeature([
+      AvailableTimeEntity,
+      PsychologistEntity,
+      BookingEntity,
+    ]),
     UserModule,
   ],
   controllers: [AvailableTimeController],

@@ -10,6 +10,7 @@ import { AvailableTimeEntity } from "./entities/available-time.entity";
 import { Between, Repository } from "typeorm";
 import { PsychologistEntity } from "src/psychologist/entities/psychologist.entity";
 import { UpdateAvailableTimeDto } from "./dto/update-available-time.dto";
+import { BookingEntity } from "src/booking/entities/booking.entity";
 
 @Injectable()
 export class AvailableTimeService {
@@ -19,6 +20,9 @@ export class AvailableTimeService {
 
     @InjectRepository(PsychologistEntity)
     private readonly psychologistRepository: Repository<PsychologistEntity>,
+
+    @InjectRepository(BookingEntity)
+    private readonly bookingRepository: Repository<BookingEntity>,
   ) {}
 
   async addFreeTime(
@@ -98,6 +102,7 @@ export class AvailableTimeService {
       }
     }
 
+    const isReserved = await this.bookingRepository.findOne({});
     await this.availableTimeRepository.remove(availableTime);
 
     return { message: "Available time removed successfully" };
