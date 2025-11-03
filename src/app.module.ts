@@ -8,6 +8,8 @@ import { SmsModule } from "./sms/sms.module";
 import { RedisModule } from "./redis/redis.module";
 import { AvailableTimeModule } from "./available-time/available-time.module";
 import { PsychologistModule } from "./psychologist/psychologist.module";
+import { BookingModule } from './booking/booking.module';
+import { ReviewModule } from './review/review.module';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { PsychologistModule } from "./psychologist/psychologist.module";
     JwtModule,
     AvailableTimeModule,
     PsychologistModule,
+    BookingModule,
+    ReviewModule,
   ],
   controllers: [],
   providers: [],
