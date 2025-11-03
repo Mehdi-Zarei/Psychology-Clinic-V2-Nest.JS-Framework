@@ -1,8 +1,11 @@
+import { BookingEntity } from "src/booking/entities/booking.entity";
 import { PsychologistEntity } from "src/psychologist/entities/psychologist.entity";
+import { ReviewEntity } from "src/review/entities/review.entity";
 import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -33,6 +36,12 @@ export class UserEntity {
 
   @OneToOne(() => PsychologistEntity, (psychologist) => psychologist.user)
   psychologist: PsychologistEntity;
+
+  @OneToMany(() => BookingEntity, (book) => book.user)
+  appointments: BookingEntity[];
+
+  @OneToMany(() => ReviewEntity, (review) => review.user)
+  review: ReviewEntity[];
 
   @CreateDateColumn()
   createdAt: Date;
