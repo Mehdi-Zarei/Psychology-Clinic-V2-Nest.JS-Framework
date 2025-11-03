@@ -1,4 +1,6 @@
 import { AvailableTimeEntity } from "src/available-time/entities/available-time.entity";
+import { BookingEntity } from "src/booking/entities/booking.entity";
+import { ReviewEntity } from "src/review/entities/review.entity";
 import { UserEntity } from "src/user/entities/user.entity";
 import {
   Column,
@@ -43,12 +45,18 @@ export class PsychologistEntity {
   @Column({ default: false })
   isActive: boolean;
 
-  @OneToOne(() => UserEntity, (user) => user.psychologist, { eager: true })
+  @OneToOne(() => UserEntity, (user) => user.psychologist)
   @JoinColumn()
   user: UserEntity;
 
   @OneToMany(() => AvailableTimeEntity, (available) => available.psychologist)
   availableTime: AvailableTimeEntity[];
+
+  @OneToMany(() => BookingEntity, (book) => book.psychologist)
+  appointments: BookingEntity[];
+
+  @OneToMany(() => ReviewEntity, (review) => review.psychologist)
+  reviews: ReviewEntity[];
 
   @CreateDateColumn()
   createdAt: Date;
