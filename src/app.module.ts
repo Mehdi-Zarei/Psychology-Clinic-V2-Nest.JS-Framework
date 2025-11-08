@@ -10,6 +10,7 @@ import { AvailableTimeModule } from "./available-time/available-time.module";
 import { PsychologistModule } from "./psychologist/psychologist.module";
 import { BookingModule } from './booking/booking.module';
 import { ReviewModule } from './review/review.module';
+import { ArticleModule } from './article/article.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ReviewModule } from './review/review.module';
     PsychologistModule,
     BookingModule,
     ReviewModule,
+    ArticleModule,
   ],
   controllers: [],
   providers: [],
