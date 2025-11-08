@@ -29,7 +29,6 @@ export class PsychologistService {
       aboutMe,
       experienceYears,
       specialization,
-      avatar,
     } = createPsychologistDto;
 
     const isPsychologistExist = await this.psychologistRepository.findOne({

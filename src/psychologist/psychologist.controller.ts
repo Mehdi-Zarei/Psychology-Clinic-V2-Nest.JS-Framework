@@ -5,7 +5,6 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
   UseGuards,
   Req,
   UseInterceptors,
@@ -15,7 +14,6 @@ import {
 } from "@nestjs/common";
 import { PsychologistService } from "./psychologist.service";
 import { CreatePsychologistDto } from "./dto/create-psychologist.dto";
-import { UpdatePsychologistDto } from "./dto/update-psychologist.dto";
 import {
   ApiBearerAuth,
   ApiConsumes,
