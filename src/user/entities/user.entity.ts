@@ -1,3 +1,4 @@
+import { ArticleEntity } from "src/article/entities/article.entity";
 import { BookingEntity } from "src/booking/entities/booking.entity";
 import { PsychologistEntity } from "src/psychologist/entities/psychologist.entity";
 import { ReviewEntity } from "src/review/entities/review.entity";
@@ -5,6 +6,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToMany,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -42,6 +44,12 @@ export class UserEntity {
 
   @OneToMany(() => ReviewEntity, (review) => review.user)
   review: ReviewEntity[];
+
+  @OneToMany(() => ArticleEntity, (article) => article.author)
+  article: ArticleEntity[];
+
+  @ManyToMany(() => ArticleEntity, (article) => article.likedBy)
+  likedArticles: ArticleEntity[];
 
   @CreateDateColumn()
   createdAt: Date;

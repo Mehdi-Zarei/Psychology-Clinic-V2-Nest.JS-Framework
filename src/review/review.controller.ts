@@ -109,7 +109,9 @@ export class ReviewController {
     return this.reviewService.create(createReviewDto, psychologistId, userId);
   }
 
-  @ApiOperation({ summary: "Users can post their comments." })
+  @ApiOperation({
+    summary: "Users can read what others have to say about the psychologist.",
+  })
   @ApiConsumes(SwaggerConsumes.FORM)
   @ApiQuery({ name: "page", example: 1, required: false })
   @ApiQuery({ name: "limit", example: 10, required: false })
