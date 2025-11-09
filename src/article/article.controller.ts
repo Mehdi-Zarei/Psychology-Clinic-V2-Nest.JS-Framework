@@ -18,6 +18,7 @@ import {
   ApiBearerAuth,
   ApiConsumes,
   ApiOperation,
+  ApiResponse,
   ApiTags,
 } from "@nestjs/swagger";
 import { SwaggerConsumes } from "src/common/enums/SwaggerConsumes.enum";
@@ -32,6 +33,57 @@ import { Request } from "express";
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
+  @ApiResponse({
+    status: 201,
+    description: "مقاله با موفقیت ایجاد شد",
+    schema: {
+      example: {
+        message: "Article Created Successfully.",
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: "خطای اعتبارسنجی در داده‌های ورودی",
+    schema: {
+      example: {
+        message: [
+          "title must be a string",
+          "content must be a string",
+          "summary must be a string",
+          "isPublished must be a boolean",
+          "readingTime must be a number",
+          "seoDescription must be a string",
+          "seoTitle must be a string",
+          "tags must be an array of strings",
+        ],
+        error: "Bad Request",
+        statusCode: 400,
+      },
+    },
+  })
+  @ApiResponse({
+    status: 409,
+    description: "مقاله یا اسلاگ تکراری است",
+    schema: {
+      example: {
+        message: ["Article is repetitive."],
+        error: "Conflict",
+        statusCode: 409,
+      },
+    },
+  })
+  @ApiResponse({
+    status: 500,
+    description: "خطای سرور",
+    schema: {
+      example: {
+        message: ["Internal server error"],
+        error: "Internal Server Error",
+        statusCode: 500,
+      },
+    },
+  })
   @ApiConsumes(SwaggerConsumes.MULTIPART)
   @ApiBearerAuth("accessToken")
   @ApiOperation({ summary: "Admin Or Psychologists Can Create Articles." })
