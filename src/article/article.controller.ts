@@ -10,6 +10,7 @@ import {
   UseInterceptors,
   Req,
   UploadedFiles,
+  ParseIntPipe,
 } from "@nestjs/common";
 import { ArticleService } from "./article.service";
 import { CreateArticleDto } from "./dto/create-article.dto";
@@ -106,14 +107,82 @@ export class ArticleController {
     return this.articleService.create(createArticleDto, userId, file);
   }
 
+  @ApiResponse({
+    status: 200,
+    description: "مقالات با موفقیت دریافت شدند",
+    schema: {
+      example: {
+        data: [
+          {
+            id: 1,
+            title: "Sample Article",
+            summary: "A brief summary.",
+            images: ["http://domain.com/images/article/sample.jpg"],
+            author: { id: 1, name: "John Doe" },
+          },
+        ],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: "مقاله‌ای یافت نشد",
+    schema: {
+      example: {
+        message: ["Article Not Found !!"],
+        error: "Not Found",
+        statusCode: 404,
+      },
+    },
+  })
+  @ApiOperation({ summary: "All Users Can Get All Published Articles." })
   @Get()
   findAll() {
     return this.articleService.findAll();
   }
 
+  @ApiResponse({
+    status: 200,
+    description: "مقاله با موفقیت دریافت شد",
+    schema: {
+      example: {
+        id: 18,
+        title: "راهکار های مقابله با افسردگی",
+        content: "ورزش کردن مداوم یکی از راهکار های مقابله با افسردگی است.",
+        author: {
+          name: "Mehdi",
+        },
+        slug: "راهکار-های-مقابله-با-افسردگی",
+        images: ["string"],
+        shortIdentifier: "FbZyRgk",
+        summary: "ورزش کردن مداوم یکی از راهکار های مقابله با افسردگی است.",
+        tags: ["روانشناسی", "افسردگی"],
+        isPublished: true,
+        views: 6,
+        readingTime: 10,
+        seoTitle: "راهکار های مقابله با افسردگی",
+        seoDescription:
+          "تاثیر ورزش و فعالیت بندی مداوم در مقابله و درمان افسردگی",
+        createdAt: "2025-11-09T14:29:52.363Z",
+        updatedAt: "2025-11-09T15:15:15.894Z",
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: "مقاله یافت نشد",
+    schema: {
+      example: {
+        message: "Article Not Found !!",
+        error: "Not Found",
+        statusCode: 404,
+      },
+    },
+  })
+  @ApiOperation({ summary: "All users can access any published article." })
   @Get(":id")
-  findOne(@Param("id") id: string) {
-    return this.articleService.findOne(+id);
+  findOne(@Param("id", ParseIntPipe) id: number) {
+    return this.articleService.findOne(id);
   }
 
   @Patch(":id")
