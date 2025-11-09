@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from "@nestjs/common";
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { CreateArticleDto } from "./dto/create-article.dto";
 import { UpdateArticleDto } from "./dto/update-article.dto";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -88,12 +92,42 @@ export class ArticleService {
     return { message: "Article Created Successfully." };
   }
 
-  findAll() {
-    return `This action returns all article`;
+  async findAll() {
+    const articles = await this.articleRepository.find({
+      where: { isPublished: true },
+      relations: ["author"],
+      select: {
+        id: true,
+        author: { name: true },
+        images: true,
+        summary: true,
+        title: true,
+        views: true,
+      },
+    });
+
+    if (!articles.length) {
+      throw new NotFoundException("Article Not Found !!");
+    }
+
+    return articles;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} article`;
+  async findOne(id: number) {
+    const mainArticle = await this.articleRepository.findOne({
+      where: { id, isPublished: true },
+      relations: ["author"],
+      select: {
+        author: { name: true },
+      },
+    });
+    if (!mainArticle) {
+      throw new NotFoundException("Article Not Found !!");
+    }
+
+    await this.articleRepository.increment({ id }, "views", 1);
+
+    return mainArticle;
   }
 
   update(id: number, updateArticleDto: UpdateArticleDto) {
