@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
@@ -10,6 +11,9 @@ import { ArticleEntity } from "./entities/article.entity";
 import { Repository } from "typeorm";
 import { UserEntity } from "src/user/entities/user.entity";
 import { nanoid } from "nanoid";
+import * as fs from "fs";
+import * as path from "path";
+
 @Injectable()
 export class ArticleService {
   constructor(
@@ -130,11 +134,93 @@ export class ArticleService {
     return mainArticle;
   }
 
-  update(id: number, updateArticleDto: UpdateArticleDto) {
-    return `This action updates a #${id} article`;
+  async update(
+    id: number,
+    updateArticleDto: UpdateArticleDto,
+    userId: number,
+    file: Express.Multer.File[],
+  ) {
+    let {
+      content,
+      isPublished,
+      readingTime,
+      seoDescription,
+      seoTitle,
+      summary,
+      tags,
+      title,
+    } = updateArticleDto;
+
+    const mainArticle = await this.articleRepository.findOne({
+      where: { id },
+      relations: ["author"],
+    });
+    if (!mainArticle) {
+      throw new NotFoundException("Article Not Found !!");
+    }
+
+    const user = await this.userRepository.findOneBy({ id: userId });
+    if (user?.role === "PSYCHOLOGIST" && mainArticle.author.id !== userId) {
+      throw new ForbiddenException(
+        "You Are Not Allowed To Update This Article.",
+      );
+    }
+
+    let newImages: string[];
+
+    if (content) mainArticle.content = content;
+    if (isPublished) mainArticle.isPublished = isPublished;
+    if (readingTime) mainArticle.readingTime = readingTime;
+    if (seoDescription) mainArticle.seoDescription = seoDescription;
+    if (seoTitle) mainArticle.seoTitle = seoTitle;
+    if (summary) mainArticle.summary = summary;
+    if (tags) mainArticle.tags = tags;
+    if (title) mainArticle.title = title;
+    if (file && file.length > 0) {
+      mainArticle?.images?.forEach((imgPath) => {
+        const fullPath = path.join(
+          __dirname,
+          "..",
+          "..",
+          "public",
+          imgPath.slice(21),
+        );
+        fs.unlink(fullPath, (err) => {
+          if (err) console.error("❌ خطا در حذف فایل:", err.message);
+        });
+      });
+
+      newImages = file.map(
+        (img) => `${process.env.DOMAIN}/images/article/${img.filename}`,
+      );
+
+      mainArticle.images = newImages;
+    }
+
+    await this.articleRepository.save(mainArticle);
+
+    return { message: "Article Updated Successfully." };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} article`;
+  async remove(id: number, userId: number) {
+    const user = await this.userRepository.findOneBy({ id: userId });
+
+    const mainArticle = await this.articleRepository.findOne({
+      where: { id },
+      relations: ["author"],
+    });
+    if (!mainArticle) {
+      throw new NotFoundException("Article Not Found !!");
+    }
+
+    if (user?.role === "PSYCHOLOGIST" && user.id !== mainArticle.author.id) {
+      throw new ForbiddenException(
+        "You Are Not Allowed To Delete This Article.",
+      );
+    }
+
+    await this.articleRepository.delete(id);
+
+    return { message: "Article Removed Successfully." };
   }
 }
