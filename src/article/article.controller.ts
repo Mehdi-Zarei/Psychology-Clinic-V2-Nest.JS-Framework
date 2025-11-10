@@ -312,4 +312,49 @@ export class ArticleController {
     const userId = req.user.id;
     return this.articleService.remove(id, userId);
   }
+
+  @ApiResponse({
+    status: 403,
+    description: "شما اجازه دسترسی به این مسیر رو ندارید.",
+    schema: {
+      example: {
+        message:
+          "You do not have permission to access this path. | You Are Not Allowed To Delete This Article.",
+        error: "Forbidden",
+        statusCode: 403,
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: "مقاله با منتشر/خارج از حالت انتشار حذف شد.",
+    schema: {
+      example: {
+        message:
+          "Article Published Successfully. | Article Non Publish Successfully.",
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: "مقاله‌ای یافت نشد",
+    schema: {
+      example: {
+        message: "Article Not Found !!",
+        error: "Not Found",
+        statusCode: 404,
+      },
+    },
+  })
+  @ApiBearerAuth("accessToken")
+  @ApiOperation({
+    summary: "Admin Or Psychologists Can Publish/Non Publish Articles.",
+  })
+  @UseGuards(CustomAuthGuard)
+  @Roles("ADMIN", "PSYCHOLOGIST")
+  @Patch(":id/togglePublish")
+  togglePublish(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
+    const userId = req.user.id;
+    return this.articleService.togglePublish(id, userId);
+  }
 }
