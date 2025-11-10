@@ -45,7 +45,9 @@ export class ArticleEntity {
   @Column({ default: 0 })
   views: number;
 
-  @ManyToMany(() => UserEntity, (user) => user.likedArticles)
+  @ManyToMany(() => UserEntity, (user) => user.likedArticles, {
+    onDelete: "CASCADE",
+  })
   @JoinTable()
   likedBy: UserEntity[];
 
