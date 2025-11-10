@@ -223,4 +223,31 @@ export class ArticleService {
 
     return { message: "Article Removed Successfully." };
   }
+
+  async togglePublish(id: number, userId: number) {
+    const mainArticle = await this.articleRepository.findOne({
+      where: { id },
+      relations: { author: true },
+    });
+    if (!mainArticle) {
+      throw new NotFoundException("Article Not Found !!");
+    }
+
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: { psychologist: true },
+    });
+    if (user?.role === "PSYCHOLOGIST" && mainArticle.author.id !== userId) {
+      throw new ForbiddenException("You Are Not Allowed To This Article.");
+    }
+
+    mainArticle.isPublished = !mainArticle.isPublished;
+    await this.articleRepository.save(mainArticle);
+
+    return {
+      message: mainArticle.isPublished
+        ? "Article Published Successfully."
+        : "Article Non Publish Successfully.",
+    };
+  }
 }
