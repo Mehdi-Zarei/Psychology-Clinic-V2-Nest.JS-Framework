@@ -357,4 +357,47 @@ export class ArticleController {
     const userId = req.user.id;
     return this.articleService.togglePublish(id, userId);
   }
+
+  @ApiResponse({
+    status: 200,
+    description: "لایک مقاله با موفقیت تغییر کرد",
+    schema: {
+      example: {
+        message: "Article Liked. | Article Un liked.",
+        likesCount: 10,
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: "مقاله یا کاربر یافت نشد",
+    schema: {
+      example: {
+        message: ["Article Not Found !!", "User Not Found !!"],
+        error: "Not Found",
+        statusCode: 404,
+      },
+    },
+  })
+  @ApiResponse({
+    status: 500,
+    description: "خطای سرور",
+    schema: {
+      example: {
+        message: ["Internal server error"],
+        error: "Internal Server Error",
+        statusCode: 500,
+      },
+    },
+  })
+  @ApiBearerAuth("accessToken")
+  @ApiOperation({
+    summary: "Users who are logged in to their account can like articles.",
+  })
+  @UseGuards(CustomAuthGuard)
+  @Patch(":id/toggleLike")
+  toggleLike(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
+    const userId = req.user.id;
+    return this.articleService.toggleLike(id, userId);
+  }
 }
