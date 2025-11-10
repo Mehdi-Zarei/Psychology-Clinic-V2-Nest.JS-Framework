@@ -45,10 +45,14 @@ export class UserEntity {
   @OneToMany(() => ReviewEntity, (review) => review.user)
   review: ReviewEntity[];
 
-  @OneToMany(() => ArticleEntity, (article) => article.author)
+  @OneToMany(() => ArticleEntity, (article) => article.author, {
+    onDelete: "CASCADE",
+  })
   article: ArticleEntity[];
 
-  @ManyToMany(() => ArticleEntity, (article) => article.likedBy)
+  @ManyToMany(() => ArticleEntity, (article) => article.likedBy, {
+    onDelete: "CASCADE",
+  })
   likedArticles: ArticleEntity[];
 
   @CreateDateColumn()
