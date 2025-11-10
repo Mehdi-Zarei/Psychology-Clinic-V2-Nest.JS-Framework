@@ -250,4 +250,40 @@ export class ArticleService {
         : "Article Non Publish Successfully.",
     };
   }
+
+  async toggleLike(id: number, userId: number) {
+    const mainArticle = await this.articleRepository.findOne({
+      where: { id },
+      relations: ["likedBy"],
+    });
+    if (!mainArticle) {
+      throw new NotFoundException("Article Not Found !!");
+    }
+
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ["likedArticles"],
+    });
+    if (!user) {
+      throw new NotFoundException("User Not Found !!");
+    }
+
+    const hasLike = mainArticle.likedBy.some((u) => u.id === user.id);
+
+    if (hasLike) {
+      mainArticle.likedBy = mainArticle.likedBy.filter((u) => u.id !== userId);
+      user.likedArticles = user.likedArticles.filter((a) => a.id !== id);
+    } else {
+      mainArticle.likedBy.push(user);
+      user.likedArticles.push(mainArticle);
+    }
+
+    await this.articleRepository.save(mainArticle);
+    await this.userRepository.save(user);
+
+    return {
+      message: hasLike ? "Article Un liked." : "Article Liked.",
+      likesCount: mainArticle.likedBy.length,
+    };
+  }
 }
