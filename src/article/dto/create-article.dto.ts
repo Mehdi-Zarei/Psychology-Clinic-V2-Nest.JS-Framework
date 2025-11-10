@@ -46,7 +46,7 @@ export class CreateArticleDto {
   @IsArray()
   @IsOptional()
   @ApiPropertyOptional({
-    type: [String],
+    type: "array",
     items: { type: "string", format: "binary" },
     required: false,
   })
