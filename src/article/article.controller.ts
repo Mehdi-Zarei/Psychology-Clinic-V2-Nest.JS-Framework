@@ -185,13 +185,131 @@ export class ArticleController {
     return this.articleService.findOne(id);
   }
 
+  @ApiResponse({
+    status: 200,
+    description: "مقاله با موفقیت به‌روزرسانی شد",
+    schema: {
+      example: {
+        message: "Article Updated Successfully.",
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: "خطای اعتبارسنجی در داده‌های ورودی",
+    schema: {
+      example: {
+        message: [
+          "title must be a string",
+          "content must be a string",
+          "summary must be a string",
+          "isPublished must be a boolean",
+          "readingTime must be a number",
+          "seoDescription must be a string",
+          "seoTitle must be a string",
+          "tags must be an array of strings",
+        ],
+        error: "Bad Request",
+        statusCode: 400,
+      },
+    },
+  })
+  @ApiResponse({
+    status: 403,
+    description: "شما اجازه به‌روزرسانی این مقاله را ندارید",
+    schema: {
+      example: {
+        message: "You Are Not Allowed To Update This Article.",
+        error: "Forbidden",
+        statusCode: 403,
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: "مقاله یافت نشد",
+    schema: {
+      example: {
+        message: "Article Not Found !!",
+        error: "Not Found",
+        statusCode: 404,
+      },
+    },
+  })
+  @ApiResponse({
+    status: 500,
+    description: "خطای سرور",
+    schema: {
+      example: {
+        message: "Internal server error",
+        error: "Internal Server Error",
+        statusCode: 500,
+      },
+    },
+  })
+  @ApiConsumes(SwaggerConsumes.MULTIPART)
+  @ApiBearerAuth("accessToken")
+  @ApiOperation({ summary: "Admin Or Psychologists Can Update Articles." })
+  @UseGuards(CustomAuthGuard)
+  @Roles("ADMIN", "PSYCHOLOGIST")
+  @UseInterceptors(
+    FilesInterceptor(
+      "images",
+      10,
+      multerConfig("public/images/article/", 3, [".jpg", ".jpeg", ".png"]),
+    ),
+  )
   @Patch(":id")
-  update(@Param("id") id: string, @Body() updateArticleDto: UpdateArticleDto) {
-    return this.articleService.update(+id, updateArticleDto);
+  update(
+    @Param("id", ParseIntPipe) id: number,
+    @Body() updateArticleDto: UpdateArticleDto,
+    @Req() req: Request,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    const userId = req.user.id;
+
+    return this.articleService.update(id, updateArticleDto, userId, files);
   }
 
+  @ApiResponse({
+    status: 403,
+    description: "شما اجازه دسترسی به این مسیر رو ندارید.",
+    schema: {
+      example: {
+        message:
+          "You do not have permission to access this path. | You Are Not Allowed To Delete This Article.",
+        error: "Forbidden",
+        statusCode: 403,
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: "مقاله با موفقیت حذف شد.",
+    schema: {
+      example: {
+        message: "Article Removed Successfully.",
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: "مقاله‌ای یافت نشد",
+    schema: {
+      example: {
+        message: "Article Not Found !!",
+        error: "Not Found",
+        statusCode: 404,
+      },
+    },
+  })
+  @ApiBearerAuth("accessToken")
+  @ApiOperation({ summary: "Admin Or Psychologists Can Remove Articles." })
+  @UseGuards(CustomAuthGuard)
+  @Roles("ADMIN", "PSYCHOLOGIST")
   @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.articleService.remove(+id);
+  remove(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
+    const userId = req.user.id;
+    return this.articleService.remove(id, userId);
   }
 }
