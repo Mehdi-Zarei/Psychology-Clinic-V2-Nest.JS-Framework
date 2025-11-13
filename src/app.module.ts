@@ -8,9 +8,11 @@ import { SmsModule } from "./sms/sms.module";
 import { RedisModule } from "./redis/redis.module";
 import { AvailableTimeModule } from "./available-time/available-time.module";
 import { PsychologistModule } from "./psychologist/psychologist.module";
-import { BookingModule } from './booking/booking.module';
-import { ReviewModule } from './review/review.module';
-import { ArticleModule } from './article/article.module';
+import { BookingModule } from "./booking/booking.module";
+import { ReviewModule } from "./review/review.module";
+import { ArticleModule } from "./article/article.module";
+import { ScheduleModule } from "@nestjs/schedule";
+import { TaskModule } from "./tasks/tasks.module";
 
 @Module({
   imports: [
@@ -25,6 +27,8 @@ import { ArticleModule } from './article/article.module';
     BookingModule,
     ReviewModule,
     ArticleModule,
+    ScheduleModule.forRoot(),
+    TaskModule,
   ],
   controllers: [],
   providers: [],
