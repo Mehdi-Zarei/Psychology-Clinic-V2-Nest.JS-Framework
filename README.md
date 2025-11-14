@@ -64,6 +64,11 @@ A feature-rich platform connecting users and mental health professionals:
   - Manage psychologist approvals, reviews, articles, and user accounts.
   - Monitor platform activity with detailed controls.
 
+- **Automated Session Status Updates:**
+  - A cron job runs every 10 minutes to check the database and automatically updates the status of reservations to `done` if their end time has passed.
+- **Bulk SMS Queue System:**
+  - Implemented a queue system using the **Bull** package to handle bulk SMS sending (e.g., for clinic anniversary discounts or mass promotions), ensuring minimal load on the server and the SMS service provider.
+
 ### 🔐 Authentication Flow
 
 - **OTP Verification:**
@@ -106,6 +111,11 @@ A feature-rich platform connecting users and mental health professionals:
 - Admins publish articles with rich media support.
 - Users engage with likes, comments, and ratings.
 - Optimized comment loading with infinite-scroll pagination.
+
+### 📨 Bulk SMS System
+
+- Utilizes **Bull** to queue bulk SMS tasks, enabling efficient mass messaging (e.g., for clinic-wide promotions like anniversary discounts).
+- Prevents server and SMS provider overload by processing messages asynchronously.
 
 ### 🛠️ Admin Tools
 
@@ -235,32 +245,59 @@ PATCH /reviews/:id: Approve/reject reviews (admin-only).
 
 ```json
 "dependencies": {
-"@nestjs/common": "^10.0.0",
-"@nestjs/core": "^10.0.0",
-"@nestjs/platform-express": "^10.0.0",
-"@nestjs/typeorm": "^10.0.0",
-"@nestjs/config": "^3.0.0",
-"@nestjs/jwt": "^10.0.0",
-"@nestjs/schedule": "^4.0.0",
-"@nestjs/swagger": "^7.0.0",
-"pg": "^8.11.0",
-"typeorm": "^0.3.17",
-"redis": "^4.6.0",
-"class-validator": "^0.14.0",
-"bcrypt": "^5.1.0",
-"jsonwebtoken": "^9.0.0",
-"multer": "^1.4.5-lts.1",
-"nodemailer": "^6.9.0",
-"nanoid": "^5.0.0",
-"slugify": "^1.6.0"
-},
-"devDependencies": {
-"@nestjs/cli": "^10.0.0",
-"@nestjs/testing": "^10.0.0",
-"typescript": "^5.0.0",
-"@types/express": "^4.17.0",
-"@types/node": "^20.0.0"
-}
+    "@nestjs/axios": "^4.0.1",
+    "@nestjs/bull": "^11.0.4",
+    "@nestjs/common": "^11.0.1",
+    "@nestjs/core": "^11.0.1",
+    "@nestjs/jwt": "^11.0.1",
+    "@nestjs/platform-express": "^11.1.8",
+    "@nestjs/schedule": "^6.0.1",
+    "@nestjs/swagger": "^11.2.1",
+    "@nestjs/typeorm": "^11.0.0",
+    "@types/bcrypt": "^6.0.0",
+    "bcrypt": "^6.0.0",
+    "bull": "^4.16.5",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.2.3",
+    "ioredis": "^5.8.2",
+    "multer": "^2.0.2",
+    "nanoid": "^3.3.4",
+    "pg": "^8.16.3",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1",
+    "typeorm": "^0.3.27"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.2.0",
+    "@eslint/js": "^9.18.0",
+    "@nestjs/cli": "^11.0.0",
+    "@nestjs/schematics": "^11.0.0",
+    "@nestjs/testing": "^11.0.1",
+    "@swc/cli": "^0.6.0",
+    "@swc/core": "^1.10.7",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/express": "^5.0.5",
+    "@types/jest": "^29.5.14",
+    "@types/multer": "^2.0.0",
+    "@types/node": "^22.10.7",
+    "@types/supertest": "^6.0.2",
+    "eslint": "^9.18.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-prettier": "^5.2.2",
+    "globals": "^16.0.0",
+    "jest": "^29.7.0",
+    "prettier": "^3.4.2",
+    "source-map-support": "^0.5.21",
+    "supertest": "^7.0.0",
+    "ts-jest": "^29.2.5",
+    "ts-loader": "^9.5.2",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.20.0"
+  }
 ```
 
 ✉️ Contact & License
