@@ -50,7 +50,13 @@ export class AuthService {
 
     await this.redisService.setKey(`otp:${phone}`, otpCode, 120);
 
-    const sms = await this.smsService.sendSms(phone, otpCode);
+    const sms = await this.smsService.sendSms(
+      phone,
+      process.env.OTP_PATTERN!,
+      process.env.OTP_VARIABLE!,
+      otpCode,
+    );
+
     if (sms.success) {
       return { message: "Otp Code Sended Successfully." };
     } else {
