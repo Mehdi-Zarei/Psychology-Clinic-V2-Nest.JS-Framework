@@ -13,6 +13,8 @@ import { ReviewModule } from "./review/review.module";
 import { ArticleModule } from "./article/article.module";
 import { ScheduleModule } from "@nestjs/schedule";
 import { TaskModule } from "./tasks/tasks.module";
+import { BullModule } from "@nestjs/bull";
+import { BulkSmsModule } from './bulk-sms/bulk-sms.module';
 
 @Module({
   imports: [
@@ -29,6 +31,13 @@ import { TaskModule } from "./tasks/tasks.module";
     ArticleModule,
     ScheduleModule.forRoot(),
     TaskModule,
+    BullModule.forRoot({
+      redis: {
+        host: "localhost",
+        port: 6379,
+      },
+    }),
+    BulkSmsModule,
   ],
   controllers: [],
   providers: [],
