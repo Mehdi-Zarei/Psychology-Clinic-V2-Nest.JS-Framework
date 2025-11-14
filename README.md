@@ -21,6 +21,8 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
+![image](https://github.com/Mehdi-Zarei/Psychology-Clinic-V2-Nest.JS-Framework/raw/b58ed238a93f0f19edf1fbee6fed816980a0a50f/public/images/psychologist-profile/building-rowlett.jpg)
+
 # 🧠 Psychology Clinic REST API (Version 2)
 
 Welcome to the **Psychology Clinic API V2**! This powerful backend drives a mental health platform where users can book appointments with psychologists, share reviews, and explore educational articles. Crafted with **NestJS** and **PostgreSQL**, it’s built for scalability, security, and a smooth user experience. Whether you're a user seeking support or a psychologist offering services, this API has you covered.
